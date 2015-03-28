@@ -79,13 +79,8 @@ public class HockeyAppRepository extends BaseRepositoryImpl {
         final List<CrashReason> crashGroups = hockeyAppClient.getCrashGroups(appId);
         List<Task> tasks = new ArrayList<>();
         for (final CrashReason crashGroup : crashGroups) {
-            final List<Crash> crashesForReason = hockeyAppClient.getCrashesForReason(appId, crashGroup);
-            String stacktrace = null;
-            if (!crashesForReason.isEmpty()) {
-                final Crash crash = crashesForReason.get(0);
-                stacktrace = hockeyAppClient.getStacktrace(appId, crash);
-            }
-            final HockeyAppTask hockeyAppTask = new HockeyAppTask(crashGroup, stacktrace);
+
+            final HockeyAppTask hockeyAppTask = new HockeyAppTask(crashGroup, apiKey, appId);
             tasks.add(hockeyAppTask);
         }
         return tasks.toArray(new Task[tasks.size()]);
@@ -182,11 +177,15 @@ public class HockeyAppRepository extends BaseRepositoryImpl {
 
     private static class HockeyAppTask extends Task {
         private final CrashReason crashGroup;
+        private final String apiKey;
+        private final String appId;
         private String stacktrace;
 
-        public HockeyAppTask(CrashReason crashGroup, String stacktrace) {
+
+        public HockeyAppTask(CrashReason crashGroup, String apiKey, String appId) {
             this.crashGroup = crashGroup;
-            this.stacktrace = stacktrace;
+            this.apiKey = apiKey;
+            this.appId = appId;
         }
 
         @NotNull
@@ -204,6 +203,17 @@ public class HockeyAppRepository extends BaseRepositoryImpl {
         @Nullable
         @Override
         public String getDescription() {
+            if (stacktrace == null) {
+                    HockeyAppClient hockeyAppClient = new HockeyAppClient(apiKey);
+                    final List<Crash> crashesForReason = hockeyAppClient.getCrashesForReason(appId, crashGroup);
+                    if (!crashesForReason.isEmpty()) {
+                        final Crash crash = crashesForReason.get(0);
+                        stacktrace = hockeyAppClient.getStacktrace(appId, crash);
+                    }
+            } else {
+                return stacktrace;
+            }
+
             return stacktrace;
         }
 
