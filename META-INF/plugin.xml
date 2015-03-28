@@ -1,0 +1,18 @@
+<idea-plugin version="2">
+    <id>dk.erikzielke.hockeyapp.idea</id>
+    <name>HockeyApp-Idea</name>
+    <version>1.0</version>
+    <vendor email="erikzielke@hotmail.com" url="http://www.erikzielke.dk">Erik Zielke</vendor>
+
+    <description><![CDATA[HockeyApp as Task Server]]></description>
+
+    <depends>com.intellij.modules.lang</depends>
+    <depends>com.intellij.tasks</depends>
+
+    <idea-version since-build="131"/>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <tasks.repositoryType implementation="dk.erikzielke.hockeyapp.idea.task.HockeyAppRepositoryType"/>
+    </extensions>
+
+</idea-plugin>
